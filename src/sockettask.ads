@@ -4,13 +4,16 @@ with System.Multiprocessors; use System.Multiprocessors;
 package SocketTask is
 
    type Byte     is mod 2**8;
+   
    Tasks_To_Create : constant Integer := Integer(System.Multiprocessors.Number_Of_CPUs); -- simultaneous socket connections.
 
    -------------------------------------------------------------------------------
    -- Use stack to pop the next free task index. When a task finishes its
    -- asynchronous (no rendezvous) phase, it pushes the index back on the stack.
    type Integer_List is array (1..Tasks_To_Create) of integer;
+   
    subtype Counter is integer range 0 .. Tasks_To_Create;
+   
    subtype Index is integer range 1 .. Tasks_To_Create;
    
    
@@ -26,14 +29,14 @@ package SocketTask is
    Task_Info : Info;
    -------------------------------------------------------------------------------
    task type AsyncSocketTask is
-      -- Rendezvous the setup, which sets the parameters for entry Echo.
+      -- Rendezvous the setup, which sets the parameters for entry ProcessRequest.
       entry Setup (Connection : GNAT.Sockets.Socket_Type;
                    Client     : GNAT.Sockets.Sock_Addr_Type;
                    Channel    : GNAT.Sockets.Stream_Access;
                    Task_Index : Index);
       -- accepts the asynchronous phase, i.e. no rendezvous. When the
       -- communication is over, push the task number back on the stack.
-      entry Echo;
+      entry ProcessRequest;
    end AsyncSocketTask;
 
 end SocketTask;

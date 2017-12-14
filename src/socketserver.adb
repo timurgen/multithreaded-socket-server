@@ -36,7 +36,7 @@ package body SocketServer is
          -- Setup the socket in this task in rendezvous.
          Worker(Use_Task).Setup(Connection,Client, Channel,Use_Task);
          -- Run the asynchronous task for the socket communications.
-         Worker(Use_Task).Echo; -- Start echo loop.
+         Worker(Use_Task).ProcessRequest; -- Start echo loop.
       end loop Find;
    end MultithreadedSocketServer;
 

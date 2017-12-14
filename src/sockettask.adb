@@ -38,9 +38,6 @@ package body SocketTask is
       my_Client     : GNAT.Sockets.Sock_Addr_Type;
       my_Channel    : GNAT.Sockets.Stream_Access;
       my_Index      : Index;
-      my_Packet_Type: Byte;
-      my_Remaing_Length: Byte;
-      b: Byte;
    begin
       loop -- Infinitely reusable
          accept Setup (Connection : GNAT.Sockets.Socket_Type;
@@ -55,23 +52,13 @@ package body SocketTask is
             Set_CPU(CPU_Range(Task_Index));
          end;
 
-         accept Echo;
+         accept ProcessRequest;
          begin
-            --MQTT packet type
-            my_Packet_Type := Byte'Input(my_Channel);
-            --Ada.Text_IO.Put("Packet_type: " &my_Packet_Type'Img) ; Ada.Text_IO.New_Line;
-            my_Remaing_Length := Byte'Input(my_Channel);
-            --Ada.Text_IO.Put("Packet_length: " &my_Remaing_Length'Img) ; Ada.Text_IO.New_Line;
-
-            for I in 1..my_Remaing_Length loop
-               b := Byte'Input(my_Channel);
-               --Ada.Text_IO.Put(b'Img);
-            end loop;
-            --Ada.Text_IO.New_Line;
-            Byte'Write (my_Channel, 2#00100000#);
-            Byte'Write (my_Channel, 2#00000010#);
-            Byte'Write (my_Channel, 2#00000001#);
-            Byte'Write (my_Channel, 2#00000000#);
+            null;
+            --read byte from input stream
+            -- my_Packet_Type := Byte'Input(my_Channel);
+            --write byte to stream
+            -- Byte'Write (my_Channel, 2#00100000#);
          exception
             when Ada.IO_Exceptions.End_Error =>
                Ada.Text_IO.Put_Line ("Echo " & integer'image(my_Index) & " end");
