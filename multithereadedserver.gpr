@@ -1,0 +1,19 @@
+project Multithereadedserver is
+
+   for Source_Dirs use ("src");
+   for Object_Dir use "obj";
+   for Main use ("main.adb");
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-gnatn", "-funroll-loops", "-gnat12", "-gnatf", "-O3");
+   end Compiler;
+
+   package Builder is
+   end Builder;
+
+   package Linker is
+      for Default_Switches ("ada") use ("-s");
+   end Linker;
+
+end Multithereadedserver;
+
