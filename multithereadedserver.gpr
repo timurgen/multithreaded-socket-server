@@ -5,14 +5,15 @@ project Multithereadedserver is
    for Main use ("main.adb");
 
    package Compiler is
-      for Default_Switches ("ada") use ("-gnatn", "-funroll-loops", "-gnat12", "-gnatf", "-O3");
+      for Default_Switches ("ada") use ("-gnat12", "-gnatf", "-g", "-g");
    end Compiler;
 
    package Builder is
+      for Switches ("ada") use ("-g");
    end Builder;
 
    package Linker is
-      for Default_Switches ("ada") use ("-s");
+      for Default_Switches ("ada") use ("-g", "-g");
    end Linker;
 
 end Multithereadedserver;

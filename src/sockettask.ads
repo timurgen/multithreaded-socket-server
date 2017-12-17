@@ -1,11 +1,11 @@
+with SocketServer; use SocketServer;
 with GNAT.Sockets;
 with System.Multiprocessors; use System.Multiprocessors;
 
 package SocketTask is
 
-   type Byte     is mod 2**8;
-   
-   Tasks_To_Create : constant Integer := Integer(System.Multiprocessors.Number_Of_CPUs); -- simultaneous socket connections.
+   -- simultaneous socket connections.
+   Tasks_To_Create : constant Integer := Integer(Number_Of_CPUs); 
 
    -------------------------------------------------------------------------------
    -- Use stack to pop the next free task index. When a task finishes its
@@ -16,7 +16,7 @@ package SocketTask is
    
    subtype Index is integer range 1 .. Tasks_To_Create;
    
-   
+   -- stack info type
    protected type Info is
       procedure Push_Stack (Return_Task_Index : in Index);
       procedure Initialize_Stack;
@@ -33,7 +33,8 @@ package SocketTask is
       entry Setup (Connection : GNAT.Sockets.Socket_Type;
                    Client     : GNAT.Sockets.Sock_Addr_Type;
                    Channel    : GNAT.Sockets.Stream_Access;
-                   Task_Index : Index);
+                   Task_Index : Index;
+                   Handler    : Callback);
       -- accepts the asynchronous phase, i.e. no rendezvous. When the
       -- communication is over, push the task number back on the stack.
       entry ProcessRequest;

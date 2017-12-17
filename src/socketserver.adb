@@ -34,9 +34,9 @@ package body SocketServer is
          Channel := GNAT.Sockets.Stream (Connection);
          Task_Info.Pop_Stack(Use_Task); -- Protected guard waits if full house.
          -- Setup the socket in this task in rendezvous.
-         Worker(Use_Task).Setup(Connection,Client, Channel,Use_Task);
+         Worker(Use_Task).Setup(Connection,Client, Channel,Use_Task, Handler);
          -- Run the asynchronous task for the socket communications.
-         Worker(Use_Task).ProcessRequest; -- Start echo loop.
+         Worker(Use_Task).ProcessRequest; -- Process request using Callback.
       end loop Find;
    end MultithreadedSocketServer;
 

@@ -38,30 +38,32 @@ package body SocketTask is
       my_Client     : GNAT.Sockets.Sock_Addr_Type;
       my_Channel    : GNAT.Sockets.Stream_Access;
       my_Index      : Index;
+      my_Handler    : Callback;
    begin
       loop -- Infinitely reusable
          accept Setup (Connection : GNAT.Sockets.Socket_Type;
-                       Client  : GNAT.Sockets.Sock_Addr_Type;
-                       Channel : GNAT.Sockets.Stream_Access;
-                       Task_Index   : Index) do
+                       Client     : GNAT.Sockets.Sock_Addr_Type;
+                       Channel    : GNAT.Sockets.Stream_Access;
+                       Task_Index : Index;
+                       Handler    : Callback) do
             -- Store parameters and mark task busy.
             my_Connection := Connection;
             my_Client     := Client;
             my_Channel    := Channel;
             my_Index      := Task_Index;
+            my_Handler    := Handler;
+
             Set_CPU(CPU_Range(Task_Index));
          end;
 
          accept ProcessRequest;
          begin
-            null;
-            --read byte from input stream
-            -- my_Packet_Type := Byte'Input(my_Channel);
-            --write byte to stream
-            -- Byte'Write (my_Channel, 2#00100000#);
+            my_Handler(my_Connection, my_Channel);
          exception
             when Ada.IO_Exceptions.End_Error =>
-               Ada.Text_IO.Put_Line ("Echo " & integer'image(my_Index) & " end");
+               Ada.Text_IO.Put_Line ("Echo " & integer'image(my_Index) & " end of stream");
+               GNAT.Sockets.Close_Socket (my_Connection);
+               Task_Info.Push_Stack (my_Index);
             when Error: others =>
                Ada.Text_IO.Put_Line ("Echo " & integer'image(my_Index) & " err " & Exception_Information(Error));
          end;
