@@ -5,7 +5,7 @@ project Multithereadedserver is
    for Main use ("main.adb");
 
    package Compiler is
-      for Default_Switches ("ada") use ("-gnat12", "-gnatf", "-g", "-g");
+      for Default_Switches ("ada") use ("-gnat12", "-gnatf", "-g", "-g", "-fstack-check", "-fcallgraph-info=su,da");
    end Compiler;
 
    package Builder is

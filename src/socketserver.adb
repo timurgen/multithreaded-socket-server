@@ -1,4 +1,5 @@
 with SocketTask; use SocketTask;
+with Logger; use Logger;
 package body SocketServer is
 
    ------------------
@@ -15,16 +16,22 @@ package body SocketServer is
 
    begin
       accept Listen;
+      GNAT.Sockets.Initialize;
+      log(Logger.INFO, "Create receiver");
       GNAT.Sockets.Create_Socket (Socket => Receiver);
+      log(Logger.INFO, "Set socket options");
       GNAT.Sockets.Set_Socket_Option
         (Socket => Receiver,
          Option => (Name    => GNAT.Sockets.Reuse_Address, Enabled => True));
+      log(Logger.INFO, "Bind socket to port " & my_Port'Image);
       GNAT.Sockets.Bind_Socket
         (Socket  => Receiver,
          Address => (Family => GNAT.Sockets.Family_Inet,
                      Addr   => GNAT.Sockets.Inet_Addr ("0.0.0.0"),
                      Port   => my_Port));
+      log(Logger.INFO, "Start listening on port  " & my_Port'Image);
       GNAT.Sockets.Listen_Socket (Socket => Receiver);
+      log(Logger.INFO, "Server listening on port " & my_Port'Image);
       Task_Info.Initialize_Stack;
       Find: loop -- Block for connection and take next free task.
          GNAT.Sockets.Accept_Socket
